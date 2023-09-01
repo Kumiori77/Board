@@ -1,2 +1,25 @@
-package kr.ac.kopo.board.entity;public class Reply {
+package kr.ac.kopo.board.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@ToString(exclude = "board")
+public class Reply extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long rno;
+
+    private String text;
+
+    private String replyer;
+
+    @ManyToOne
+    private Board board;
+
 }

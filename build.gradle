@@ -32,6 +32,10 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // miraDB
+    implementation group: 'org.mariadb.jdbc', name: 'mariadb-java-client',
+            version: '3.1.2'
 }
 
 tasks.named('test') {

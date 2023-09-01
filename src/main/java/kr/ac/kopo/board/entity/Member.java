@@ -1,2 +1,22 @@
-package kr.ac.kopo.board.entity;public class Member {
+package kr.ac.kopo.board.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.*;
+
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@ToString
+public class Member extends BaseEntity {
+
+    @Id
+    private String email;
+
+    private String password;
+
+    private String username;
+
 }
