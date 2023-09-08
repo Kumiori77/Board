@@ -42,4 +42,36 @@ public class BoardServiceTest {
 
     }
 
+    @Test
+    public void testGet() {
+
+        Long bno = 100L;
+
+        BoardDTO dto = boardService.get(bno);
+
+        System.out.println(dto);
+
+    }
+
+    @Test
+    public void testRemove() {
+
+        Long bno = 100L;
+
+        boardService.removeWithReplies(bno);
+
+    }
+
+    @Test
+    public void testModify() {
+
+        BoardDTO boardDTO = BoardDTO.builder()
+                .bno(1L)
+                .title("제목 변경")
+                .content("내용 변경")
+                .build();
+
+        boardService.modify(boardDTO);
+    }
+
 }
