@@ -70,7 +70,7 @@ public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport
         jpqlQuery.leftJoin(member).on(board.writer.eq(member));
         jpqlQuery.leftJoin(reply).on(reply.board.eq(board));
 
-        JPQLQuery<Tuple> tuple = jpqlQuery.select(board, member.email, reply.count());
+        JPQLQuery<Tuple> tuple = jpqlQuery.select(board, member, reply.count());
 
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         BooleanExpression expression = board.bno.gt(0L);
@@ -128,11 +128,8 @@ public class SearchBoardRepositoryImpl extends QuerydslRepositorySupport
             log.info(t);
         }
 
-
-
         long count = tuple.fetchCount(); // 한 페이지 당 글 수
         log.info("count : " + count);
-
 
         return new PageImpl<Object[]>(
                 result.stream().map(t -> t.toArray()).collect(Collectors.toList()),

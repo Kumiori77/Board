@@ -3,6 +3,7 @@ package kr.ac.kopo.board.repository;
 import jakarta.transaction.Transactional;
 import kr.ac.kopo.board.entity.Board;
 import kr.ac.kopo.board.entity.Member;
+import org.apache.juli.logging.Log;
 import org.hibernate.internal.log.SubSystemLogging;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,9 @@ public class BoardRepositoryTest {
                 .and(Sort.by("title").ascending()));
 
         Page<Object[]> result = boardRepository.searchPage("t", "1", pageable);
+
+        System.out.println("++++++++++++++++++++++++++++");
+        System.out.println(result);
     }
 
 }
