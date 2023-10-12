@@ -1,17 +1,27 @@
 package kr.ac.kopo.board.controller;
 
+import kr.ac.kopo.board.dto.UploadResulDTO;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,15 +32,17 @@ public class UploadController {
     private String uploadPath;
 
     @PostMapping("/uploadAjax")
-    public void uploadFile(MultipartFile[] uploadFiles) {
+    public ResponseEntity<List<UploadResulDTO>> uploadFile(MultipartFile[] uploadFiles) {
+
+        List<UploadResulDTO> resultDTOList = new ArrayList<>();
 
         // 들어온 파일들의 이름 출력
-        for(MultipartFile uploadFile : uploadFiles) {
+        for (MultipartFile uploadFile : uploadFiles) {
 
             // 이미지 파일인지 확인
             if (uploadFile.getContentType().startsWith("image") == false) {
                 log.warn("this file is not image type");
-                return;
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
             String originalName = uploadFile.getOriginalFilename();
@@ -55,11 +67,13 @@ public class UploadController {
 
             try {
                 uploadFile.transferTo(savePath);
-            }
-            catch (IOException e) {
+                resultDTOList.add(new UploadResulDTO(fileName, uuid, folderPath));
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        return new ResponseEntity<>(resultDTOList, HttpStatus.OK);
 
     }
 
@@ -79,4 +93,29 @@ public class UploadController {
         return folderPath;
     }
 
+    @GetMapping("/display")
+    public ResponseEntity<byte[]> getFile(String fileName) {
+        ResponseEntity<byte[]> result = null;
+
+        try {
+            String srcFileName = URLDecoder.decode(fileName, "UTF-8");
+            log.info("File Name : " + srcFileName);
+
+            File file = new File(uploadPath + File.separator + srcFileName);
+            log.info(("File : " + file));
+
+            HttpHeaders header = new HttpHeaders();
+
+            // MIME 타입 처리
+            header.add("Content-Type", Files.probeContentType(file.toPath()));
+            // 파일 데이터 처리
+            result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), header, HttpStatus.OK);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return result;
+    }
 }
